@@ -1,0 +1,23 @@
+#!/bin/bash
+
+cwd=`pwd`
+bn=`basename $1`
+id="$RANDOM$RANDOM"
+idbn="$id$bn"
+cp $1 /tmp/$idbn
+
+cd /tmp
+aubiocut -i $idbn -c -L -q
+
+c="1"
+pad="00000"
+for seg in `ls $id* |grep -v ^$idbn$`; do
+	let "padding = ${#pad} - ${#c}"
+	cp $seg $cwd/${bn:0:3}${pad:0:$padding}$c.wav
+	rm $seg
+	let "c = $c + 1"
+done
+
+rm $idbn 
+	
+
