@@ -1,0 +1,11 @@
+## chopup
+## Dan Richert 2010
+## dan.richert@gmail.com
+##
+## Cuts an input WAV file into segments based on onset
+## detection. Output files are named old school DOS 
+## 8.3 style.
+##
+## Requires aubiocut. To install on Debian-based systems 
+## (as root):
+## $ apt-get install aubio-tools

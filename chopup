@@ -1,23 +1,56 @@
 #!/bin/bash
 
+## chopup
+## Dan Richert 2010
+## dan.richert@gmail.com
+##
+## Cuts an input WAV file into segments based on onset
+## detection. Output files are named old school DOS 
+## 8.3 style.
+##
+## Requires aubiocut. To install on Debian-based systems 
+## (as root):
+## $ apt-get install aubio-tools
+
+if [ "$#" -eq "0" -o "$#" -gt "2" ]
+then
+    echo "Usage: $0 <input-file> <optional: onset threshold (0.0..1.0)>"
+fi
+
+# Get the current working directory
 cwd=`pwd`
-bn=`basename $1`
-id="$RANDOM$RANDOM"
-idbn="$id$bn"
-cp $1 /tmp/$idbn
 
-cd /tmp
-aubiocut -i $idbn -c -L -q
+# Set up a temporary working directory
+tmpdir=`mktemp -d`
 
+# Copy the input file to the $tmpdir 
+infile=`basename $1`
+cp $1 $tmpdir/
+ 
+# Set default threshold 
+threshold="0.4"
+
+# Assign second argument to threshold if specified
+if [ "$#" = "2" ]
+then
+  threshold="$2"
+fi
+
+# Chop up
+cd $tmpdir
+aubiocut -i $infile -c -L -q -t $threshold
+
+# Rename the output files
 c="1"
 pad="00000"
-for seg in `ls $id* |grep -v ^$idbn$`; do
+for seg in `ls ${infile:0:3}* |grep -v ^$infile$`; do
 	let "padding = ${#pad} - ${#c}"
-	cp $seg $cwd/${bn:0:3}${pad:0:$padding}$c.wav
+	cp $seg $cwd/${infile:0:3}${pad:0:$padding}$c.wav
 	rm $seg
 	let "c = $c + 1"
 done
 
-rm $idbn 
+# Clean up
+rm -rf $tmpdir
 	
 
