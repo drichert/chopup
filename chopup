@@ -15,6 +15,7 @@
 if [ "$#" -eq "0" -o "$#" -gt "2" ]
 then
     echo "Usage: $0 <input-file> <optional: onset threshold (0.0..1.0)>"
+    exit
 fi
 
 # Get the current working directory
@@ -45,7 +46,7 @@ c="1"
 pad="00000"
 for seg in `ls ${infile:0:3}* |grep -v ^$infile$`; do
 	let "padding = ${#pad} - ${#c}"
-	cp $seg $cwd/${infile:0:3}${pad:0:$padding}$c.wav
+	cp "$seg" "$cwd/${infile:0:3}${pad:0:$padding}$c.wav"
 	rm $seg
 	let "c = $c + 1"
 done
